@@ -1,510 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lawn Service Contact — QR Generator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sturgeon Lawn Service Quote</title>
 
-  <!-- ─── External Libraries ──────────────────────────────────────────────── -->
-  <!-- QR Code generator (no server needed, pure client-side) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+body{
+font-family: Arial, sans-serif;
+background:#f4f7f6;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+text-align:center;
+}
 
-  <style>
-    /* ─── CSS Reset & Variables ──────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.container{
+background:white;
+padding:40px;
+border-radius:10px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+max-width:400px;
+}
 
-    :root {
-      --green-deep:   #1a4a2e;
-      --green-mid:    #2d7a4f;
-      --green-light:  #4caf7d;
-      --gold:         #c8a84b;
-      --gold-light:   #e8c96a;
-      --cream:        #f7f4ee;
-      --text-dark:    #1a1a1a;
-      --text-muted:   #5a6a5a;
-      --white:        #ffffff;
-      --shadow:       0 8px 40px rgba(26,74,46,0.18);
-      --radius:       18px;
-      --font-display: 'Playfair Display', Georgia, serif;
-      --font-body:    'DM Sans', 'Helvetica Neue', sans-serif;
-    }
+h1{
+color:#2d7a2d;
+}
 
-    /* ─── Google Fonts ───────────────────────────────────────────────────── */
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap');
+button{
+background:#2d7a2d;
+color:white;
+border:none;
+padding:16px 28px;
+font-size:18px;
+border-radius:8px;
+cursor:pointer;
+margin-top:20px;
+}
 
-    /* ─── Page Layout ────────────────────────────────────────────────────── */
-    body {
-      font-family: var(--font-body);
-      background: var(--cream);
-      color: var(--text-dark);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 40px 20px 60px;
-      position: relative;
-      overflow-x: hidden;
-    }
+button:hover{
+background:#256425;
+}
 
-    /* Decorative grass texture at bottom */
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 120px;
-      background: linear-gradient(to top, rgba(77,175,125,0.12), transparent);
-      pointer-events: none;
-    }
+p{
+color:#555;
+margin-top:10px;
+}
+</style>
 
-    /* ─── Header ─────────────────────────────────────────────────────────── */
-    .site-header {
-      text-align: center;
-      margin-bottom: 44px;
-      animation: fadeDown 0.7s ease both;
-    }
-
-    .badge {
-      display: inline-block;
-      background: var(--green-deep);
-      color: var(--gold-light);
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      padding: 5px 14px;
-      border-radius: 999px;
-      margin-bottom: 16px;
-    }
-
-    h1 {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 900;
-      color: var(--green-deep);
-      line-height: 1.1;
-      margin-bottom: 10px;
-    }
-
-    h1 em {
-      font-style: italic;
-      color: var(--green-mid);
-    }
-
-    .subtitle {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      font-weight: 400;
-      max-width: 460px;
-      margin: 0 auto;
-      line-height: 1.6;
-    }
-
-    /* ─── Two-column Card Grid ───────────────────────────────────────────── */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
-      max-width: 860px;
-      width: 100%;
-      animation: fadeUp 0.8s ease 0.2s both;
-    }
-
-    @media (max-width: 640px) {
-      .grid { grid-template-columns: 1fr; }
-    }
-
-    /* ─── Cards ──────────────────────────────────────────────────────────── */
-    .card {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 36px 32px;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .card-title {
-      font-family: var(--font-display);
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--green-deep);
-      letter-spacing: 0.01em;
-      text-align: center;
-    }
-
-    .card-desc {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      text-align: center;
-      line-height: 1.55;
-    }
-
-    /* ─── QR Code Wrapper ────────────────────────────────────────────────── */
-    #qr-wrapper {
-      background: var(--white);
-      border: 3px solid var(--green-light);
-      border-radius: 14px;
-      padding: 16px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 20px rgba(77,175,125,0.15);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    #qr-wrapper:hover {
-      transform: scale(1.02);
-      box-shadow: 0 8px 30px rgba(77,175,125,0.25);
-    }
-
-    /* QRCode.js renders a canvas or img inside — let it breathe */
-    #qr-wrapper canvas,
-    #qr-wrapper img {
-      display: block;
-      border-radius: 6px;
-    }
-
-    /* ─── Download Button ────────────────────────────────────────────────── */
-    .btn-download {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--green-deep);
-      color: var(--white);
-      font-family: var(--font-body);
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 10px 22px;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.2s ease, transform 0.15s ease;
-    }
-
-    .btn-download:hover {
-      background: var(--green-mid);
-      transform: translateY(-1px);
-    }
-
-    /* ─── Preview Card (simulates the landing page) ──────────────────────── */
-    .preview-frame {
-      width: 100%;
-      background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-mid) 100%);
-      border-radius: 14px;
-      padding: 36px 28px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Decorative leaf circles */
-    .preview-frame::before,
-    .preview-frame::after {
-      content: '';
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.05);
-    }
-    .preview-frame::before { width: 180px; height: 180px; top: -60px; right: -40px; }
-    .preview-frame::after  { width: 120px; height: 120px; bottom: -30px; left: -20px; }
-
-    .preview-icon {
-      width: 56px; height: 56px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
-    }
-
-    .preview-headline {
-      font-family: var(--font-display);
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--white);
-      text-align: center;
-      line-height: 1.3;
-    }
-
-    .preview-sub {
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.72);
-      text-align: center;
-      line-height: 1.5;
-    }
-
-    /* ─── The Main CTA Button (what appears when QR is scanned) ─────────── */
-    .btn-contact {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--gold);
-      color: var(--green-deep);
-      font-family: var(--font-body);
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      padding: 14px 30px;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
-      position: relative;
-      z-index: 1;
-    }
-
-    .btn-contact:hover {
-      background: var(--gold-light);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(0,0,0,0.3);
-    }
-
-    .btn-contact:active {
-      transform: translateY(0);
-    }
-
-    /* SMS icon SVG inline */
-    .sms-icon {
-      width: 18px; height: 18px;
-      fill: var(--green-deep);
-      flex-shrink: 0;
-    }
-
-    /* ─── Info Strip ─────────────────────────────────────────────────────── */
-    .info-strip {
-      max-width: 860px;
-      width: 100%;
-      background: var(--green-deep);
-      color: rgba(255,255,255,0.85);
-      border-radius: var(--radius);
-      padding: 22px 30px;
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      font-size: 0.8rem;
-      line-height: 1.6;
-      margin-top: 0;
-      animation: fadeUp 0.9s ease 0.35s both;
-    }
-
-    .info-strip strong { color: var(--gold-light); }
-
-    .info-icon {
-      font-size: 1.3rem;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    /* ─── SMS Link ───────────────────────────────────────────────────────── */
-    .sms-target-link {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      word-break: break-all;
-      text-align: center;
-      font-family: monospace;
-      background: var(--cream);
-      border: 1px dashed #c8d8c8;
-      border-radius: 8px;
-      padding: 8px 14px;
-      width: 100%;
-    }
-
-    /* ─── Footer ─────────────────────────────────────────────────────────── */
-    footer {
-      margin-top: 40px;
-      font-size: 0.72rem;
-      color: #aaa;
-      text-align: center;
-      animation: fadeUp 1s ease 0.5s both;
-    }
-
-    /* ─── Keyframe Animations ────────────────────────────────────────────── */
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-  </style>
 </head>
+
 <body>
 
-  <!-- ─── Page Header ──────────────────────────────────────────────────────── -->
-  <header class="site-header">
-    <div class="badge">🌿 Lawn Service — QR Contact System</div>
-    <h1>Your <em>Instant</em> Customer<br>Contact QR Code</h1>
-    <p class="subtitle">
-      Print or display this QR code. When scanned, customers tap one button
-      and an SMS is opened on their phone — pre-filled and ready to send.
-    </p>
-  </header>
+<div class="container">
 
-  <!-- ─── Main Grid: QR Code + Live Preview ────────────────────────────────── -->
-  <div class="grid">
+<h1>Sturgeon Lawn Service</h1>
 
-    <!-- LEFT: QR Code Output -->
-    <div class="card">
-      <div class="card-title">📱 Your QR Code</div>
-      <p class="card-desc">
-        Scan with any smartphone camera.<br>
-        Works on all iOS and Android devices.
-      </p>
+<p>Tap the button below to request a lawn service quote.</p>
 
-      <!-- QR Code renders here via QRCode.js -->
-      <div id="qr-wrapper">
-        <div id="qr-canvas"></div>
-      </div>
+<a href="sms:5735762319?body=Hi%20I%20would%20like%20a%20quote%20on%20your%20lawn%20service.%20My%20address%20is%3A">
+<button>Request Quote via Text</button>
+</a>
 
-      <!-- SMS URL shown for reference -->
-      <div class="sms-target-link" id="sms-url-display"></div>
+<p>No forms. Just send a quick text.</p>
 
-      <!-- Download link — populated by JS after QR renders -->
-      <a class="btn-download" id="download-btn" download="lawn-service-qr.png">
-        ⬇ Download PNG
-      </a>
-    </div>
-
-    <!-- RIGHT: Live Preview of the landing page customers see -->
-    <div class="card">
-      <div class="card-title">👁 Customer View Preview</div>
-      <p class="card-desc">
-        This is what customers see in their browser<br>after scanning the QR code.
-      </p>
-
-      <div class="preview-frame">
-        <div class="preview-icon">🌿</div>
-        <div class="preview-headline">
-          Get a Free Lawn Service Quote
-        </div>
-        <div class="preview-sub">
-          Tap below and we'll reply as soon as possible.
-          No sign-up, no forms — just a quick message.
-        </div>
-
-        <!--
-          ─── THE CONTACT BUTTON ──────────────────────────────────────────────
-          href="sms:+15739877141?body=..." opens native SMS on iOS and Android.
-          No app install, no authentication wall — the OS handles it natively.
-          The %20 and %0A encode spaces and line breaks in the URL.
-          On iOS: works in Safari, Chrome, Edge.
-          On Android: works in Chrome, Samsung Internet, Firefox.
-        -->
-        <a class="btn-contact" id="preview-btn" href="#">
-          <svg class="sms-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
-          </svg>
-          Contact Lawn Service
-        </a>
-      </div>
-
-      <p class="card-desc" style="margin-top:4px;">
-        Button opens the <strong>native SMS app</strong> automatically.<br>
-        Message is pre-filled — customer just hits Send.
-      </p>
-    </div>
-
-  </div>
-
-  <!-- ─── Info Strip: How It Works ─────────────────────────────────────────── -->
-  <div class="info-strip">
-    <span class="info-icon">ℹ️</span>
-    <div>
-      <strong>How this works:</strong> The QR code encodes a direct URL to a lightweight landing page.
-      When a customer scans it, their browser opens a page with a single "Contact Lawn Service" button.
-      Tapping the button triggers the device's native SMS application via the
-      <code>sms:</code> URI scheme — <strong>no app install, no login, no form submission required</strong>.
-      The message "<em>I am interested in your service.</em>" is pre-populated. The customer simply taps Send.
-      Destination number: <strong>+1 (573) 987-7141</strong>.
-    </div>
-  </div>
-
-  <!-- ─── Footer ───────────────────────────────────────────────────────────── -->
-  <footer>
-    Generated by imagiSOFT Ltd &nbsp;·&nbsp; QR + SMS Contact System &nbsp;·&nbsp; Compatible: iOS Safari, Android Chrome &amp; all major mobile browsers
-  </footer>
-
-
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <!-- JAVASCRIPT                                                              -->
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <script>
-    // ─── Configuration ────────────────────────────────────────────────────────
-    // Change these two values to update the phone number or pre-filled message.
-    const PHONE_NUMBER   = '+15739877141';
-    const SMS_MESSAGE    = 'I am interested in your service.';
-
-    // ─── Build the SMS URI ────────────────────────────────────────────────────
-    // RFC 5724: sms:<number>?body=<encoded-message>
-    // Both iOS and Android honour this scheme in their default browsers.
-    // The semicolon variant (sms:+1xxx;body=...) is for legacy Android — the
-    // question-mark variant works on both modern platforms.
-    const encodedMessage = encodeURIComponent(SMS_MESSAGE);
-    const smsURI         = `sms:${PHONE_NUMBER}?body=${encodedMessage}`;
-
-    // ─── Build the QR Code Target URL ────────────────────────────────────────
-    // The QR code points to THIS file's own URL when hosted, but since we want
-    // this to be a fully self-contained single-file deliverable, we embed
-    // the complete landing page as a data URI inside the QR code.
-    // However — data URIs in QR codes produce massive, unreadable codes.
-    //
-    // Best practice for a real deployment:
-    //   Host this file at a short URL (e.g. yourdomain.com/contact) and
-    //   point the QR code at that URL.
-    //
-    // For a zero-hosting solution we encode the SMS URI directly into the QR.
-    // The landing page is then this HTML file opened locally or hosted anywhere.
-    // The QR code itself navigates the phone straight to the SMS URI.
-    //
-    // We provide BOTH options:
-    //   Option A: QR → smsURI directly  (no hosting needed, opens SMS immediately)
-    //   Option B: QR → hosted URL       (customer sees the branded button first)
-    //
-    // Current setting: Option A (direct SMS) — most compatible, zero hosting.
-    const QR_TARGET = smsURI;
-
-    // Display the encoded SMS URL for reference
-    document.getElementById('sms-url-display').textContent = QR_TARGET;
-
-    // Set the preview button href
-    document.getElementById('preview-btn').href = smsURI;
-
-    // ─── Generate QR Code ────────────────────────────────────────────────────
-    // QRCode.js options: high error correction (H) for logo overlay tolerance,
-    // 220px renders crisply at most print sizes.
-    const qr = new QRCode(document.getElementById('qr-canvas'), {
-      text:           QR_TARGET,
-      width:          220,
-      height:         220,
-      colorDark:      '#1a4a2e',   // deep green — brand colour
-      colorLight:     '#ffffff',
-      correctLevel:   QRCode.CorrectLevel.H
-    });
-
-    // ─── Enable PNG Download ──────────────────────────────────────────────────
-    // QRCode.js renders a <canvas>. We wait one tick for it to paint, then
-    // convert the canvas to a data URL and wire it to the download anchor.
-    setTimeout(() => {
-      const canvas = document.querySelector('#qr-canvas canvas');
-      if (canvas) {
-        const dataURL = canvas.toDataURL('image/png');
-        const dlBtn   = document.getElementById('download-btn');
-        dlBtn.href     = dataURL;
-      }
-    }, 400);
-  </script>
+</div>
 
 </body>
 </html>

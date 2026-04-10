@@ -3,52 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sturgeon Lawn Service Quote</title>
+<title>Sturgeon Lawn Services</title>
 
 <style>
 body{
-font-family: Arial, sans-serif;
-background:#f4f7f6;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-margin:0;
+font-family: Arial, Helvetica, sans-serif;
 text-align:center;
+padding:40px;
+background:#f7f7f7;
 }
 
 .container{
+max-width:420px;
+margin:auto;
 background:white;
-padding:40px;
+padding:40px 25px;
 border-radius:10px;
-box-shadow:0 4px 12px rgba(0,0,0,0.1);
-max-width:400px;
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
 
-h1{
-color:#2d7a2d;
+.company{
+font-size:28px;
+font-weight:bold;
+color:#2e8b57;
+margin-bottom:10px;
 }
 
-button{
-background:#2d7a2d;
+.tagline{
+font-size:16px;
+margin-bottom:35px;
+color:#333;
+}
+
+.text-btn{
+display:inline-block;
+background:#2e8b57;
 color:white;
-border:none;
-padding:16px 28px;
-font-size:18px;
+text-decoration:none;
+font-size:20px;
+padding:16px 30px;
 border-radius:8px;
-cursor:pointer;
-margin-top:20px;
+font-weight:bold;
 }
 
-button:hover{
-background:#256425;
+.text-btn:hover{
+background:#256f47;
 }
 
-p{
-color:#555;
-margin-top:10px;
+.terms{
+margin-top:25px;
+font-size:14px;
 }
+
+.terms a{
+color:#2e8b57;
+text-decoration:none;
+}
+
 </style>
+
+<script>
+function sendText(){
+var phone = "5739877141";
+var message = encodeURIComponent("Can I get a quote for your lawn services?");
+
+var ua = navigator.userAgent || navigator.vendor || window.opera;
+
+if(/android/i.test(ua)){
+window.location.href = "sms:" + phone + "?body=" + message;
+}
+else{
+window.location.href = "sms:" + phone + "&body=" + message;
+}
+}
+</script>
 
 </head>
 
@@ -56,15 +84,15 @@ margin-top:10px;
 
 <div class="container">
 
-<h1>Sturgeon Lawn Service</h1>
+<div class="company">Sturgeon Lawn Services</div>
 
-<p>Tap the button below to request a lawn service quote.</p>
+<div class="tagline">hassle free quote, no forms to fill out!</div>
 
-<a href="sms:5735762319?body=Hi%20I%20would%20like%20a%20quote%20on%20your%20lawn%20service.%20My%20address%20is%3A">
-<button>Request Quote via Text</button>
-</a>
+<button class="text-btn" onclick="sendText()">Send Us A Text</button>
 
-<p>No forms. Just send a quick text.</p>
+<div class="terms">
+<a href="text-terms.html">Text Terms</a>
+</div>
 
 </div>
 
